@@ -2,22 +2,18 @@
 
 **Last Updated:** November 18, 2025 16:07
 
-## 🔴 Current Issues
+## 🔴 Current Issue
 
-### 1. PyTorch Installation Corrupted
-- **Problem:** Partial uninstall during upgrade left broken files
-- **Impact:** Cannot import torch or run training
-- **Fix:** Run `bash fix_pytorch_cuda.sh`
+### Flash-Attention ABI Incompatibility
+- **Problem:** Flash-attention compiled for PyTorch 2.5.1, but vLLM requires PyTorch 2.4.0
+- **Impact:** Import error prevents training from starting
+- **Fix:** Run `bash remove_flash_attn.sh`
 
-### 2. CUDA Compatibility Warning
-- **Problem:** RTX PRO 6000 Blackwell (sm_120) not in PyTorch 2.6.0 support list
-- **Impact:** Warning messages, but GPU will work in compatibility mode
-- **Fix:** Downgrade to PyTorch 2.5.1 with CUDA 12.4
-
-### 3. Missing vLLM
-- **Problem:** vLLM not installed
-- **Impact:** OpenRLHF training cannot start
-- **Fix:** Included in `fix_pytorch_cuda.sh`
+### Previous Issues (RESOLVED ✅)
+- ✅ PyTorch installation - Fixed
+- ✅ CUDA compatibility - Working in compatibility mode
+- ✅ vLLM installation - Installed
+- ✅ Import compatibility - Fixed
 
 ## ✅ What's Working
 
@@ -32,30 +28,20 @@
 
 ## 🚀 Next Steps
 
-### Step 1: Fix PyTorch Installation
+### Step 1: Remove Flash-Attention
 ```bash
-bash fix_pytorch_cuda.sh
+bash remove_flash_attn.sh
 ```
 
 This will:
-- Clean up corrupted PyTorch
-- Install PyTorch 2.5.1 + CUDA 12.4
-- Install vLLM 0.6.3.post1
-- Install flash-attention
-- Verify everything works
+- Remove the incompatible flash-attention package
+- Allow OpenRLHF to use standard PyTorch attention
 
-**Expected time:** 5-10 minutes
+**Expected time:** 10 seconds
 
-### Step 2: Apply Import Fixes
+### Step 2: Launch Training
 ```bash
-bash fix_red_team.sh
-```
-
-This ensures OpenRLHF can import medical_team components.
-
-### Step 3: Launch Training
-```bash
-bash launch_training.sh
+bash launch_training_no_flash.sh
 ```
 
 This starts the REINFORCE++ training with:
@@ -63,24 +49,29 @@ This starts the REINFORCE++ training with:
 - Local reward function (no server needed)
 - Single GPU (RTX PRO 6000)
 - 316 training samples
+- Standard attention (no flash-attn)
 
 ## 📊 System Info
 
 - **Environment:** medical_reward (conda)
 - **Python:** 3.10
 - **GPU:** NVIDIA RTX PRO 6000 Blackwell (96GB VRAM)
-- **CUDA:** 12.4 (target)
-- **PyTorch:** 2.5.1 (target)
-- **OpenRLHF:** Installed from source
+- **CUDA:** 12.1
+- **PyTorch:** 2.4.0+cu121 ✅
+- **vLLM:** 0.6.3.post1 ✅
+- **OpenRLHF:** Installed from source ✅
+- **Flash-Attention:** Removed (incompatible)
 
 ## 📁 Key Files
 
 ### Setup Scripts
-- `fix_pytorch_cuda.sh` - Fix PyTorch + CUDA installation
+- `remove_flash_attn.sh` - Remove incompatible flash-attention ⚡
+- `launch_training_no_flash.sh` - Start training (no flash-attn) ⚡
 - `fix_red_team.sh` - Apply import compatibility fixes
-- `launch_training.sh` - Start training
+- `fix_pytorch_cuda.sh` - Fix PyTorch + CUDA installation (already done)
 
 ### Documentation
+- `FLASH_ATTN_FIX.md` - Flash-attention fix guide ⚡
 - `PYTORCH_FIX_GUIDE.md` - Detailed PyTorch fix instructions
 - `QUICK_REFERENCE.md` - Quick command reference
 - `README_START_HERE.md` - Main setup guide
@@ -122,18 +113,15 @@ PyTorch will run in compatibility mode. The GPU will work fine.
 # Activate environment
 conda activate medical_reward
 
-# Fix PyTorch
-bash fix_pytorch_cuda.sh
-
-# Apply import fixes
-bash fix_red_team.sh
+# Remove flash-attention (CURRENT STEP)
+bash remove_flash_attn.sh
 
 # Start training
-bash launch_training.sh
+bash launch_training_no_flash.sh
 
 # Check GPU
 nvidia-smi
 
-# Test PyTorch
-python -c "import torch; print(torch.cuda.is_available())"
+# Test installations
+python -c "import torch; print(f'PyTorch: {torch.__version__}'); import vllm; print(f'vLLM: {vllm.__version__}')"
 ```
