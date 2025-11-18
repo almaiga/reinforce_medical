@@ -24,6 +24,10 @@ class MedicalGameOutcome(Enum):
     PARSING_ERROR = "parsing_error"
 
 
+# Alias for OpenRLHF compatibility
+GameOutcome = MedicalGameOutcome
+
+
 from .medical_judge import load_medical_judge_model, evaluate_medical_response
 from .medical_game_manager import MedicalDialogueGameManager, MedicalGameState
 from .remote_judge import (
@@ -31,6 +35,22 @@ from .remote_judge import (
     test_judge_connection,
     wait_for_judge_server
 )
+
+# Import utils functions for OpenRLHF compatibility
+from .utils import (
+    convert_medical_game_history_to_messages,
+    medical_cot_format_check_and_extract,
+    get_medical_game_reward_general_sum,
+    get_medical_cot_formatting_reward,
+    MEDICAL_REWARD_COEFF_CONFIG
+)
+
+# Aliases for OpenRLHF compatibility
+convert_game_history_to_messages = convert_medical_game_history_to_messages
+cot_format_check_and_extract = medical_cot_format_check_and_extract
+get_redteaming_game_reward_general_sum = get_medical_game_reward_general_sum
+get_cot_formatting_reward = get_medical_cot_formatting_reward
+REWARD_COEFF_CONFIG = MEDICAL_REWARD_COEFF_CONFIG
 
 # Try to import OpenRLHF version if available
 try:
@@ -41,6 +61,7 @@ except ImportError:
     _has_openrlhf = False
 
 __all__ = [
+    # Medical-specific names
     'MedicalGameOutcome',
     'load_medical_judge_model',
     'evaluate_medical_response',
@@ -48,7 +69,19 @@ __all__ = [
     'MedicalGameState',
     'create_medical_judge_remote_function',
     'test_judge_connection',
-    'wait_for_judge_server'
+    'wait_for_judge_server',
+    'convert_medical_game_history_to_messages',
+    'medical_cot_format_check_and_extract',
+    'get_medical_game_reward_general_sum',
+    'get_medical_cot_formatting_reward',
+    'MEDICAL_REWARD_COEFF_CONFIG',
+    # OpenRLHF compatibility aliases
+    'GameOutcome',
+    'convert_game_history_to_messages',
+    'cot_format_check_and_extract',
+    'get_redteaming_game_reward_general_sum',
+    'get_cot_formatting_reward',
+    'REWARD_COEFF_CONFIG',
 ]
 
 if _has_openrlhf:
