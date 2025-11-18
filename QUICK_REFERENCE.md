@@ -3,8 +3,8 @@
 ## 🚀 Complete Setup (4 Commands)
 
 ```bash
-# 1. Install dependencies
-./install_dependencies.sh
+# 1. Install dependencies (using conda - recommended)
+./install_with_conda.sh
 
 # 2. Download model (with fast transfer)
 pip install hf_transfer
@@ -25,8 +25,14 @@ python scripts/convert_to_openrlhf_format.py
 
 ### Install Dependencies
 ```bash
+# Recommended: Conda method (avoids flash-attn build issues)
+./install_with_conda.sh
+
+# Alternative: Pip method
+conda install -c conda-forge flash-attn -y
 ./install_dependencies.sh
 ```
+- Installs flash-attn from conda-forge (pre-built)
 - Installs OpenRLHF from Self-RedTeam fork
 - Sets up medical_team as red_team module
 - Installs requirements
@@ -102,10 +108,13 @@ ls -lt checkpoints/ | head -5
 
 ## 🚨 Common Issues
 
-### OpenRLHF build error
+### OpenRLHF/flash-attn build error
 ```bash
-pip install wheel setuptools build
-pip install torch --index-url https://download.pytorch.org/whl/cu118
+# Use conda method instead (recommended)
+./install_with_conda.sh
+
+# Or install flash-attn from conda first
+conda install -c conda-forge flash-attn -y
 ./install_dependencies.sh
 ```
 

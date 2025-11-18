@@ -16,24 +16,36 @@ Let's fix everything!
 
 ### Step 1: Install Dependencies (5 min)
 
+**Recommended: Use Conda Method** (avoids flash-attn build issues)
+
 ```bash
-# Install OpenRLHF from Self-RedTeam fork
-./install_dependencies.sh
+# Install using conda (recommended)
+./install_with_conda.sh
 ```
 
 This will:
+- Install flash-attn from conda-forge (pre-built, no compilation)
 - Install OpenRLHF with REINFORCE++ support
 - Setup medical_team as red_team module
 - Install other requirements
 
-**If you get errors**, try:
+**Alternative: Pip Method**
+
 ```bash
-# Install build dependencies first
-pip install wheel setuptools
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+# Install flash-attn from conda first
+conda install -c conda-forge flash-attn -y
+
+# Then install OpenRLHF
+./install_dependencies.sh
+```
+
+**If you still get errors:**
+```bash
+# Ensure PyTorch is installed
+conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia -y
 
 # Then retry
-./install_dependencies.sh
+./install_with_conda.sh
 ```
 
 ---
