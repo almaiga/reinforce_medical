@@ -20,7 +20,7 @@ That's it! ✅
 
 ### `quick_start.sh`
 - Downloads your fine-tuned model (Abdine/qwen3-4b-medical-selfplay-sft)
-- Installs OpenRLHF
+- Installs OpenRLHF (from PyPI)
 - Generates 638 training samples
 - Verifies local reward function
 
@@ -92,10 +92,11 @@ medical_reward_0/
 
 ## Prerequisites
 
-- CUDA GPU
+- CUDA GPU (RTX PRO 6000 - perfect!)
 - Python 3.8+
 - ~20GB disk space
 - HuggingFace CLI (`pip install huggingface-hub`)
+- OpenRLHF (`pip install openrlhf`)
 
 ---
 
