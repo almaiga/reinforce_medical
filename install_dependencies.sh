@@ -10,8 +10,14 @@ echo "Installing Dependencies"
 echo "=========================================="
 echo ""
 
-# 1. Install OpenRLHF from Self-RedTeam fork
-echo "1. Installing OpenRLHF (Self-RedTeam fork with REINFORCE++)..."
+# 1. Install flash-attn from conda-forge first
+echo "1. Installing flash-attn from conda-forge..."
+conda install -c conda-forge flash-attn -y
+echo "✅ flash-attn installed"
+
+# 2. Install OpenRLHF from Self-RedTeam fork
+echo ""
+echo "2. Installing OpenRLHF (Self-RedTeam fork with REINFORCE++)..."
 if [ ! -d "selfplay-redteaming-reference" ]; then
     echo "❌ Error: selfplay-redteaming-reference directory not found"
     echo "Please ensure the repository is cloned with submodules"
@@ -19,26 +25,27 @@ if [ ! -d "selfplay-redteaming-reference" ]; then
 fi
 
 cd selfplay-redteaming-reference
-pip install -e .
+pip install -e . --no-deps  # Skip flash-attn since we installed from conda
+pip install -e .  # Install other dependencies
 cd ..
 echo "✅ OpenRLHF installed"
 
-# 2. Setup medical_team as red_team module
+# 3. Setup medical_team as red_team module
 echo ""
-echo "2. Setting up medical_team module..."
+echo "3. Setting up medical_team module..."
 rm -rf selfplay-redteaming-reference/red_team
 cp -r medical_team selfplay-redteaming-reference/red_team
 echo "✅ medical_team copied as red_team"
 
-# 3. Install other requirements
+# 4. Install other requirements
 echo ""
-echo "3. Installing other requirements..."
+echo "4. Installing other requirements..."
 pip install -r requirements.txt
 echo "✅ Requirements installed"
 
-# 4. Verify installation
+# 5. Verify installation
 echo ""
-echo "4. Verifying installation..."
+echo "5. Verifying installation..."
 
 # Check OpenRLHF
 if python -c "import openrlhf" 2>/dev/null; then
