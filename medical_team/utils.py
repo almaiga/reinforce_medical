@@ -308,3 +308,29 @@ def convert_medical_game_history_to_conversation(history, error_type=None):
         history_str += "\n" + "-" * 30 + "\n"
     
     return history_str
+
+
+# ============================================================================
+# Aliases for OpenRLHF compatibility
+# OpenRLHF expects these function names from red_team.utils
+# ============================================================================
+
+# Alias for CoT format checking
+cot_format_check_and_extract = medical_cot_format_check_and_extract
+
+# Alias for CoT formatting reward
+get_cot_formatting_reward = get_medical_cot_formatting_reward
+
+# Alias for general sum reward
+get_redteaming_game_reward_general_sum = get_medical_game_reward_general_sum
+
+# Zero-sum reward (same as general sum for our case)
+def get_redteaming_game_reward_zero_sum(gamedata: Dict[str, Any], labels: Dict[str, Any], reward_coeff_config: str = "medical_general_sum") -> Tuple[float, set]:
+    """
+    Zero-sum reward variant (alias for general sum in medical domain)
+    
+    In medical self-play, the rewards are already zero-sum:
+    - When attacker succeeds (error undetected), assessor fails
+    - When assessor succeeds (error detected), attacker fails
+    """
+    return get_medical_game_reward_general_sum(gamedata, labels, reward_coeff_config)
