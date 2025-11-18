@@ -1,0 +1,15 @@
+# Core dependencies first
+torch
+datasets
+transformers
+accelerate
+bitsandbytes
+trl
+scikit-learn
+hf
+hf_transfer
+wandb
+pydantic>=2.0.0
+
+# These require torch to be installed first
+# Install separately: pip install flash_attn vllm verl>=0.2.0 ray[default]>=2.9.0
