@@ -6,7 +6,6 @@ accelerate
 bitsandbytes
 trl
 scikit-learn
-hf
 hf_transfer
 wandb
 pydantic>=2.0.0
