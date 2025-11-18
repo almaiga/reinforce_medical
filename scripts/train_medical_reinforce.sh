@@ -3,6 +3,7 @@ set -x
 
 # Medical Self-Play REINFORCE++ Training Script
 # Uses fine-tuned Qwen3-4B model as starting point
+# Local judge evaluation (no separate server needed)
 
 # Model path (your fine-tuned model on SSH server)
 MODEL_PATH="trainer_output/qwen3-4b-medical-selfplay-sft"
@@ -12,24 +13,18 @@ echo "Using model: $MODEL_PATH"
 # Training configuration
 PREFIX="medical_selfplay_RL"
 RUN_NAME="${PREFIX}_$(date +%m%d_%H%M)"
-REMOTE_RM_URL="http://localhost:8000/judge"
+
+# Use local reward function (no remote server)
+REWARD_FUNCTION="medical_team/local_reward_function.py"
 
 # Custom configs for medical domain
 CUSTOM_CONFIGS='{
     "max_turns": 2,
     "reward_type": "medical_general_sum",
     "remove_ties": true,
-    "error_types": ["dosage", "diagnosis", "contraindication", "management", "causalOrganism"]
+    "error_types": ["dosage", "diagnosis", "contraindication", "management", "causalOrganism"],
+    "judge_model": "google/medgemma-4b-it"
 }'
-
-# Check if judge server is running
-echo "Checking judge server..."
-if ! curl -s http://localhost:8000/health > /dev/null; then
-    echo "❌ Judge server not running!"
-    echo "Start it with: python scripts/serve_medical_judge.py --model google/medgemma-4b-it --port 8000 &"
-    exit 1
-fi
-echo "✅ Judge server is running"
 
 # Check if data exists
 if [ ! -f "data/medical_openrlhf/train.jsonl" ]; then
@@ -41,17 +36,17 @@ if [ ! -f "data/medical_openrlhf/train.jsonl" ]; then
 fi
 echo "✅ Training data found"
 
-# Run REINFORCE++ training
+# Run REINFORCE++ training with local judge
 python -m openrlhf.cli.train_ppo_ray \
     --actor_num_nodes 1 \
     --actor_num_gpus_per_node 1 \
     --ref_num_nodes 1 \
     --ref_num_gpus_per_node 1 \
-    --remote_rm_url $REMOTE_RM_URL \
+    --remote_rm_url $REWARD_FUNCTION \
     --vllm_num_engines 1 \
     --vllm_tensor_parallel_size 1 \
     --colocate_all_models \
-    --vllm_gpu_memory_utilization 0.7 \
+    --vllm_gpu_memory_utilization 0.75 \
     --pretrain $MODEL_PATH \
     --save_path checkpoints/${RUN_NAME} \
     --ckpt_path checkpoints/${RUN_NAME}/ckpt \

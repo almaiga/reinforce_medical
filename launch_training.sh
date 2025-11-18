@@ -101,39 +101,14 @@ else
     print_status "Training data found ($SAMPLE_COUNT samples)"
 fi
 
-# Step 5: Start judge server if not running
+# Step 5: Check local reward function
 echo ""
-echo "Step 5: Checking judge server..."
-if curl -s http://localhost:$JUDGE_PORT/health > /dev/null 2>&1; then
-    print_status "Judge server already running"
-else
-    print_warning "Judge server not running, starting..."
-    
-    # Start judge server in background
-    nohup python scripts/serve_medical_judge.py \
-        --model $JUDGE_MODEL \
-        --port $JUDGE_PORT \
-        --device cuda \
-        > judge_server.log 2>&1 &
-    
-    JUDGE_PID=$!
-    echo "  Judge server PID: $JUDGE_PID"
-    
-    # Wait for server to start
-    echo "  Waiting for judge server to start..."
-    for i in {1..30}; do
-        if curl -s http://localhost:$JUDGE_PORT/health > /dev/null 2>&1; then
-            print_status "Judge server started successfully"
-            break
-        fi
-        sleep 1
-        if [ $i -eq 30 ]; then
-            print_error "Judge server failed to start"
-            echo "Check judge_server.log for details"
-            exit 1
-        fi
-    done
+echo "Step 5: Checking local reward function..."
+if [ ! -f "medical_team/local_reward_function.py" ]; then
+    print_error "Local reward function not found"
+    exit 1
 fi
+print_status "Local reward function found (no separate judge server needed)"
 
 # Step 6: Final verification
 echo ""
@@ -164,7 +139,8 @@ echo ""
 echo "Configuration:"
 echo "  Model: $MODEL_PATH"
 echo "  Data: $TRAINING_DATA"
-echo "  Judge: http://localhost:$JUDGE_PORT/judge"
+echo "  Judge: Local (medical_team/local_reward_function.py)"
+echo "  GPU: RTX PRO 6000 (single GPU, all models colocated)"
 echo ""
 echo "Training will start in 3 seconds..."
 sleep 3

@@ -41,24 +41,14 @@ python scripts/convert_to_openrlhf_format.py \
     --input data/medical_rl_training/train.jsonl \
     --output data/medical_openrlhf/train.jsonl
 
-# 5. Start judge server
+# 5. Verify local reward function
 echo ""
-echo "5. Starting judge server..."
-nohup python scripts/serve_medical_judge.py \
-    --model google/medgemma-4b-it \
-    --port 8000 \
-    --device cuda \
-    > judge_server.log 2>&1 &
-
-echo "Waiting for judge server to start..."
-sleep 10
-
-# Test judge server
-if curl -s http://localhost:8000/health > /dev/null; then
-    echo "✅ Judge server is running"
+echo "5. Verifying local reward function..."
+if [ -f "medical_team/local_reward_function.py" ]; then
+    echo "✅ Local reward function ready"
+    echo "   (No separate judge server needed - all on same GPU)"
 else
-    echo "❌ Judge server failed to start"
-    echo "Check judge_server.log for details"
+    echo "❌ Local reward function not found"
     exit 1
 fi
 
