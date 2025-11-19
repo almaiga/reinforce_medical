@@ -49,9 +49,21 @@ logs/
 *.log
 
 # Training outputs
-trainer_output/
 checkpoints/
 wandb/
+outputs/
+
+# Model checkpoints (large files)
+trainer_output/*/pytorch_model*.bin
+trainer_output/*/model*.safetensors
+trainer_output/*/*.bin
+trainer_output/*/*.safetensors
+
+# Keep model configs and tokenizers
+!trainer_output/*/config.json
+!trainer_output/*/tokenizer*
+!trainer_output/*/special_tokens_map.json
+!trainer_output/*/generation_config.json
 
 # Data (optional - uncomment if you don't want to track data)
 # data/
@@ -59,3 +71,14 @@ wandb/
 
 # Reference repositories
 selfplay-redteaming-reference/
+
+# Temporary files
+*.tmp
+*.bak
+*~
+
+# Ray temporary files
+/tmp/ray/
+
+# verl cache
+.verl_cache/

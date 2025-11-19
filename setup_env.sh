@@ -62,6 +62,16 @@ echo "Installing requirements..."
 cd /workspace/reinforce_medical
 pip install -r requirements.txt
 
+# Install verl for RL training
+echo "Installing verl..."
+pip install verl
+
+# Install additional dependencies
+echo "Installing additional dependencies..."
+pip install ray[default]  # Ray with default dependencies
+pip install omegaconf  # For configuration management
+pip install wandb  # For logging
+
 # Install huggingface_hub for model download
 echo "Installing huggingface_hub..."
 pip install huggingface_hub
